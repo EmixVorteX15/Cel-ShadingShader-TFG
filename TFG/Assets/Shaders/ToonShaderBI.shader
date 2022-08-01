@@ -36,6 +36,8 @@ Shader "Unlit/ToonShaderBI"
         _Radius("Radius", Range(0,1)) = 0.5
         [Toggle] 
         _Diagonal("Diagonal", Float) = 0
+        [Toggle] 
+        _Size("Size", Float) = 0
     }
     SubShader
     {
@@ -49,6 +51,7 @@ Shader "Unlit/ToonShaderBI"
             #pragma fragment frag
             // declaration for Toggles ifs   
             #pragma shader_feature _DIAGONAL_ON  
+            #pragma shader_feature _SIZE_ON
             #pragma shader_feature _PALETA_ON    
 
             // needed for IntRange 
@@ -67,7 +70,7 @@ Shader "Unlit/ToonShaderBI"
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
+                float4 vertex : POSITION;
                 float3 worldNormal : TEXCOORD1; // Just a name to assign on memory but it wont be UV
                 float4 color : COLOR;
             };
@@ -88,15 +91,16 @@ Shader "Unlit/ToonShaderBI"
             float _Halftone3;
             float _Halftone4;
 
+            float outline(float3 normal, float3 pos)
+            {
+                float3 ecPos = -_WorldSpaceCameraPos + pos;
+                return dot(normalize(normal), normalize(ecPos));
+            }
+
             float Toon(float3 normal, float3 lightDir)
             {
                 float NdotL = max(0.0,dot(normalize(normal), normalize(lightDir)));
-                float detail = 1.0f/_Stripes;
-                #if _PALETA_ON
-                    return floor(NdotL/detail);
-                #else
-                    return NdotL;
-                #endif
+                return NdotL;
             }
 
             float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
@@ -116,7 +120,11 @@ Shader "Unlit/ToonShaderBI"
 
                 float2 nearest = 2.0 * frac(_Frequency * st) - 1.0;
                 float dist = length(nearest);
-                float radius = _Radius * sqrt(NdotL);
+                float radius = _Radius;
+
+                #if _SIZE_ON
+                    radius *= sqrt(NdotL);
+                #endif
                 //float radius = _Radius * NdotL;
                 float3 fragColor;
                 if(dist < radius)
@@ -131,11 +139,13 @@ Shader "Unlit/ToonShaderBI"
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
+                //o.vertex = v.vertex;
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 o.color = _LightColor0;
                 return o;
             }
+
 
             fixed4 frag (v2f i) : SV_Target
             {
@@ -143,6 +153,7 @@ Shader "Unlit/ToonShaderBI"
                 fixed4 col = tex2D(_MainTex, i.uv);
                 float detail = 1.0f/_Stripes;
                 float3 normal = i.worldNormal;
+                float4 position = mul(UNITY_MATRIX_MV,i.vertex);
                 float2 uv = i.uv;
                 float halftones[4] =
                     {
@@ -153,9 +164,11 @@ Shader "Unlit/ToonShaderBI"
                     };
                 float ToonRange = Toon(normal, _WorldSpaceLightPos0.xyz);
                #if _PALETA_ON
-                    col *= ToonRange * _ColorPaleta;
+                    //col *= ToonRange * _ColorPaleta;
+                    col.xyz *= halftone(_ColorHalftone.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
+
                #else
-                    
+                    // Must be done in dinamic number
                     float4 colors[4] =
                     {
                         _Color1,
@@ -169,17 +182,25 @@ Shader "Unlit/ToonShaderBI"
                         if(ToonRange > detail*i && ToonRange < detail*(i+1))
                         {
                             if(halftones[halftones.Length-i-1])
-                                col.xyz = halftone(_ColorHalftone.xyz, colors[colors.Length-i-1], uv, ToonRange);
+                                col.xyz *= halftone(_ColorHalftone.xyz, colors[colors.Length-i-1], uv, ToonRange);
                             else
-                                col = colors[colors.Length-i-1];
+                                col *= colors[colors.Length-i-1];
                         }
                     }
                 #endif
                 // If no halftone wanted, set frequency to 0
+
+
                 float4 fragColor;
-                fragColor.xyz = col;
+                if(outline(normal, position)< 0.01)
+                {
+                    fragColor.xyz = float3(1.0f,1.0f,1.0f);
+                }
+                else
+                {
+                    fragColor.xyz = col;
+                }
                 fragColor.w = 1;
-                // apply fog
                 return fragColor;
             }
             ENDCG

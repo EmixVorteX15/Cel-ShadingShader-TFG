@@ -10,6 +10,7 @@ Material:
   m_Name: Prueba
   m_Shader: {fileID: 4800000, guid: b1643dc620cf688408d2c657d13de446, type: 3}
   m_ShaderKeywords: _DIAGONAL_ON _HALFTONE1_ON _HALFTONE2_ON _HALFTONE3_ON _HALFTONE4_ON
+    _PALETA_ON _SIZE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -63,7 +64,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _Diagonal: 1
     - _DstBlend: 0
-    - _Frequency: 69
+    - _Frequency: 45
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -73,10 +74,12 @@ Material:
     - _Halftone4: 1
     - _Metallic: 0
     - _Mode: 0
+    - _ModifySize: 0
     - _OcclusionStrength: 1
-    - _Paleta: 0
+    - _Paleta: 1
     - _Parallax: 0.02
-    - _Radius: 0.652
+    - _Radius: 0.475
+    - _Size: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -90,7 +93,7 @@ Material:
     - _Color2: {r: 0.018428266, g: 0.7830189, b: 0, a: 1}
     - _Color3: {r: 1, g: 0.56566113, b: 0.042452812, a: 1}
     - _Color4: {r: 0.92765963, g: 1, b: 0, a: 1}
-    - _ColorHalftone: {r: 1, g: 0.28773582, b: 0.28773582, a: 1}
+    - _ColorHalftone: {r: 0.7075472, g: 0.2993922, b: 0.07676221, a: 1}
     - _ColorPaleta: {r: 1, g: 0.0990566, b: 0.0990566, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
