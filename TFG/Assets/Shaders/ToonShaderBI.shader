@@ -4,19 +4,38 @@ Shader "Unlit/ToonShaderBI"
     {
         _MainTex ("Texture", 2D) = "white" {}
         
+        // Number of stripes
         [IntRange]
         _Stripes("Stripes", Range(0,10)) = 3
         
+        // Personalized colors
         _Color1("Color1", Color) = (1,1,1,1)
-        _Color2("Color2", Color) = (1,1,1,1)
-        _Color3("Color3", Color) = (1,1,1,1)
-        _Color4("Color4", Color) = (1,1,1,1)
-        
         [Toggle] 
-        _Paleta("Paleta de colores", Float) = 0
+        _Halftone1("Halftone", Float) = 0
+        _Color2("Color2", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone2("Halftone", Float) = 0
+        _Color3("Color3", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone3("Halftone", Float) = 0
+        _Color4("Color4", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone4("Halftone", Float) = 0
         
-        _ColorPaleta("ColorPaleta", Color) = (1,1,1,1)
+        // Color palette
+        [Toggle] 
+        _Paleta("Palette", Float) = 0
+        
+        _ColorPaleta("Palette Color", Color) = (1,1,1,1)
 
+
+        // Halftone
+        [IntRange]
+        _Frequency("Frequency", Range(0,200)) = 0
+        _ColorHalftone("Dots Color", Color) = (1,1,1,1)
+        _Radius("Radius", Range(0,1)) = 0.5
+        [Toggle] 
+        _Diagonal("Diagonal", Float) = 0
     }
     SubShader
     {
@@ -28,9 +47,12 @@ Shader "Unlit/ToonShaderBI"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature      // needed for Toggle
-            #pragma shader_feature _PALETA_ON
-            #pragma multi_compile       // needed for IntRange too
+            // declaration for Toggles ifs   
+            #pragma shader_feature _DIAGONAL_ON  
+            #pragma shader_feature _PALETA_ON    
+
+            // needed for IntRange 
+            #pragma multi_compile               
 
             #include "UnityCG.cginc"
             #include "UnityLightingCommon.cginc"
@@ -57,7 +79,14 @@ Shader "Unlit/ToonShaderBI"
             float4 _Color2;
             float4 _Color3;
             float4 _Color4;
+            float4 _ColorHalftone;
             int _Stripes;
+            float _Radius;
+            int _Frequency;
+            float _Halftone1;
+            float _Halftone2;
+            float _Halftone3;
+            float _Halftone4;
 
             float Toon(float3 normal, float3 lightDir)
             {
@@ -69,6 +98,35 @@ Shader "Unlit/ToonShaderBI"
                     return NdotL;
                 #endif
             }
+
+            float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
+            {
+                /*//float2 st2 = float2x2(0.707, -0.707, 0.707, 0.707) * uv;
+                float2 nearest = 2.0 * frac(_Frequency * uv) - 1.0;*/
+        
+                float2 st;
+                #if _DIAGONAL_ON
+                matrix <float, 2, 2> diagonalMatrix = { 0.707f, -0.707f, 
+                                0.707f, 0.707f
+                               };
+                st = mul((diagonalMatrix), uv);
+                #else
+                st = uv;
+                #endif
+
+                float2 nearest = 2.0 * frac(_Frequency * st) - 1.0;
+                float dist = length(nearest);
+                float radius = _Radius * sqrt(NdotL);
+                //float radius = _Radius * NdotL;
+                float3 fragColor;
+                if(dist < radius)
+                    fragColor = dots;
+                else
+                    fragColor = color;
+                //float3 color = mix(dots, color, smoothstep(radius, dist)); pendiente de hacer suavizado entre base y dots
+                return fragColor;
+            }
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -85,8 +143,17 @@ Shader "Unlit/ToonShaderBI"
                 fixed4 col = tex2D(_MainTex, i.uv);
                 float detail = 1.0f/_Stripes;
                 float3 normal = i.worldNormal;
+                float2 uv = i.uv;
+                float halftones[4] =
+                    {
+                        _Halftone1,
+                        _Halftone2,
+                        _Halftone3,
+                        _Halftone4
+                    };
+                float ToonRange = Toon(normal, _WorldSpaceLightPos0.xyz);
                #if _PALETA_ON
-                    col *= Toon(normal, _WorldSpaceLightPos0.xyz) * _ColorPaleta;
+                    col *= ToonRange * _ColorPaleta;
                #else
                     
                     float4 colors[4] =
@@ -99,14 +166,21 @@ Shader "Unlit/ToonShaderBI"
                 
                     for(int i = 0; i < 4; i++)
                     {
-                        if(Toon(normal, _WorldSpaceLightPos0.xyz) > detail*i &&  Toon(normal, _WorldSpaceLightPos0.xyz) < detail*(i+1))
+                        if(ToonRange > detail*i && ToonRange < detail*(i+1))
                         {
-                            col = colors[colors.Length-i-1];
+                            if(halftones[halftones.Length-i-1])
+                                col.xyz = halftone(_ColorHalftone.xyz, colors[colors.Length-i-1], uv, ToonRange);
+                            else
+                                col = colors[colors.Length-i-1];
                         }
                     }
                 #endif
+                // If no halftone wanted, set frequency to 0
+                float4 fragColor;
+                fragColor.xyz = col;
+                fragColor.w = 1;
                 // apply fog
-                return col;
+                return fragColor;
             }
             ENDCG
         }
