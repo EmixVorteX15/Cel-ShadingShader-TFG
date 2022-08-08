@@ -9,8 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Prueba
   m_Shader: {fileID: 4800000, guid: b1643dc620cf688408d2c657d13de446, type: 3}
-  m_ShaderKeywords: _DIAGONAL_ON _HALFTONE1_ON _HALFTONE2_ON _HALFTONE3_ON _HALFTONE4_ON
-    _PALETA_ON _SIZE_ON
+  m_ShaderKeywords: _DIAGONAL_ON _PALETA_ON _SIZE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -64,36 +63,43 @@ Material:
     - _DetailNormalMapScale: 1
     - _Diagonal: 1
     - _DstBlend: 0
-    - _Frequency: 45
+    - _Frequency: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 32.39
     - _GlossyReflections: 1
-    - _Halftone1: 1
-    - _Halftone2: 1
-    - _Halftone3: 1
-    - _Halftone4: 1
+    - _Halftone1: 0
+    - _Halftone2: 0
+    - _Halftone3: 0
+    - _Halftone4: 0
     - _Metallic: 0
     - _Mode: 0
     - _ModifySize: 0
     - _OcclusionStrength: 1
+    - _OutlineThreshold: 0
     - _Paleta: 1
     - _Parallax: 0.02
     - _Radius: 0.475
+    - _RimAmount: 0.94
+    - _RimThreshold: 0
     - _Size: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Strength: 0.5
-    - _Stripes: 4
+    - _Stripes: 3
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
+    - _AmbientColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
     - _Color: {r: 0.08940016, g: 0.38679248, b: 0.1250872, a: 1}
-    - _Color1: {r: 0.023077011, g: 1, b: 0, a: 1}
+    - _Color1: {r: 0.53444135, g: 1, b: 0, a: 1}
     - _Color2: {r: 0.018428266, g: 0.7830189, b: 0, a: 1}
-    - _Color3: {r: 1, g: 0.56566113, b: 0.042452812, a: 1}
-    - _Color4: {r: 0.92765963, g: 1, b: 0, a: 1}
+    - _Color3: {r: 1, g: 0.11065775, b: 0, a: 1}
+    - _Color4: {r: 0.92941177, g: 1, b: 0, a: 1}
     - _ColorHalftone: {r: 0.7075472, g: 0.2993922, b: 0.07676221, a: 1}
-    - _ColorPaleta: {r: 1, g: 0.0990566, b: 0.0990566, a: 1}
+    - _ColorPaleta: {r: 0.019668924, g: 0.24528301, b: 0.09120508, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
+    - _RimColor: {r: 0.22352941, g: 0.5333272, b: 0.5568628, a: 1}
+    - _SpecularColor: {r: 0.07075471, g: 1, b: 0.14475109, a: 1}
   m_BuildTextureStacks: []
