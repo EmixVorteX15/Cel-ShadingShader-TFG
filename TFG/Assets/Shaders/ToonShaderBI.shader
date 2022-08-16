@@ -44,6 +44,8 @@ Shader "Unlit/ToonShaderBI"
         _ColorPaleta("Palette Color", Color) = (1,1,1,1)
        
         // Outline
+        [Toggle]
+        _Outline("Outline", Float) = 0
         _OutlineColor("Outline Color", Color) = (1,1,1,1)
         _OutlineThreshold("Outline Threshold", Range(0,1)) = 0.1
 
@@ -57,6 +59,10 @@ Shader "Unlit/ToonShaderBI"
         _Diagonal("Diagonal", Float) = 0
         [Toggle] 
         _Size("Size", Float) = 0
+
+        // Miscelaneous
+        [Toggle]
+        _BackColor("Back Color", Float) = 0
     }
     SubShader
     {
@@ -76,9 +82,11 @@ Shader "Unlit/ToonShaderBI"
 
 
             // declaration for Toggles ifs   
-            #pragma shader_feature _DIAGONAL_ON  
+            #pragma shader_feature _DIAGONAL_ON
             #pragma shader_feature _SIZE_ON
-            #pragma shader_feature _PALETA_ON    
+            #pragma shader_feature _PALETA_ON  
+            #pragma shader_feature _OUTLINE_ON  
+            #pragma shader_feature _BACKCOLOR_ON  
 
             // needed for IntRange 
             //#pragma multi_compile               
@@ -122,6 +130,7 @@ Shader "Unlit/ToonShaderBI"
             float _Halftone4;
 
             // Outline
+            float _Outline;
             float _OutlineThreshold;
             float4 _OutlineColor;
 
@@ -133,6 +142,9 @@ Shader "Unlit/ToonShaderBI"
             float4 _RimColor;
 			float _RimAmount;
 			float _RimThreshold;
+
+            // Miscelaneous
+            float _BackColor;
 
             v2f vert (appdata v)
             {
@@ -146,14 +158,19 @@ Shader "Unlit/ToonShaderBI"
                 return o;
             }
 
-            float outline(float3 normal, float3 viewDir)
+            int outline(float3 normal, float3 viewDir)
             {
-                return dot(normal, viewDir);
+                return (dot(normal, viewDir) < _OutlineThreshold);
             }
 
             float Toon(float3 normal, float3 lightDir)
             {
-                float NdotL = max(0.0,dot(normal, lightDir));
+                float NdotL;
+                #if _BACKCOLOR_ON
+                    NdotL = abs(dot(normal, lightDir));
+                #else
+                    NdotL = max(0.0, dot(normal, lightDir));
+                #endif
                 return NdotL;
             }
 
@@ -179,13 +196,13 @@ Shader "Unlit/ToonShaderBI"
                 #if _SIZE_ON
                     radius *= sqrt(NdotL);
                 #endif
-                //float radius = _Radius * NdotL;
+
                 float3 fragColor;
                 if(dist < radius)
                     fragColor = dots;
                 else
                     fragColor = color;
-                //float3 color = mix(dots, color, smoothstep(radius, dist)); pendiente de hacer suavizado entre base y dots
+                //float3 color = (dots, color, smoothstep(radius, dist)); pendiente de hacer suavizado entre base y dots
                 return fragColor;
             }
 
@@ -194,7 +211,7 @@ Shader "Unlit/ToonShaderBI"
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
 
-                float detail = 1.0f/_Stripes;
+                float detail = 1.0f/(_Stripes+1); // +1 because black does not count as a stripe
 
                 // All info from i transformed
                 float3 normal = normalize(i.worldNormal);
@@ -235,8 +252,11 @@ Shader "Unlit/ToonShaderBI"
                     };
                 
                #if _PALETA_ON
-                    //col *= ToonRange * _ColorPaleta;
-                    col.xyz *= halftone(_ColorHalftone.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
+                    float smooth = smoothstep(floor(1.0f + ToonRange/detail) - 0.01f, floor(1.0f + ToonRange/detail) , ToonRange/detail);
+                    
+                    float3 color1 = halftone(_ColorHalftone.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
+                    float3 color2 = halftone(_ColorHalftone.xyz, floor(1+ToonRange/detail) * _ColorPaleta, uv, ToonRange);
+                    col.xyz *= lerp(color1, color2, smooth);
                #else
                     // Must be done in dinamic number
                     float4 colors[4] =
@@ -251,17 +271,17 @@ Shader "Unlit/ToonShaderBI"
                     {
                         if(ToonRange > detail*i && ToonRange < detail*(i+1))
                         {
-                            if(halftones[halftones.Length-i-1])
-                                col.xyz *= halftone(_ColorHalftone.xyz, colors[colors.Length-i-1], uv, ToonRange);
-                            else
-                                col *= colors[colors.Length-i-1];
+                            col.xyz *= halftone(_ColorHalftone.xyz, colors[colors.Length-i-1], uv, ToonRange);
                         }
                     }
                 #endif
-                // If no halftone wanted, set frequency to 0
-
+                
                 float4 fragColor;
-                if(outline(normal, viewDir)< _OutlineThreshold)
+                int outlineEffect = 0;
+                #if _OUTLINE_ON
+                    outlineEffect = outline(normal, viewDir);
+                #endif
+                if(outlineEffect)
                 {
                     fragColor.xyz = _OutlineColor.xyz;
                 }
@@ -273,6 +293,7 @@ Shader "Unlit/ToonShaderBI"
                 return fragColor;
             }
             ENDCG
-        }
+        }  
+            UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
 }
