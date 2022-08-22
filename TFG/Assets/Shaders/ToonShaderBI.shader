@@ -38,7 +38,7 @@ Shader "Unlit/ToonShaderBI"
         [Toggle] 
         _Halftone4("Halftone", Float) = 0
         
-        // Color palette
+        // Tonality Mode
         [Toggle] 
         _Paleta("Palette", Float) = 0
         _ColorPaleta("Palette Color", Color) = (1,1,1,1)
@@ -59,6 +59,8 @@ Shader "Unlit/ToonShaderBI"
         _Diagonal("Diagonal", Float) = 0
         [Toggle] 
         _Size("Size", Float) = 0
+        [KeywordEnum(UV, Camera)]
+        _Coordinates ("Coordinates", Float) = 0
 
         // Miscelaneous
         [Toggle]
@@ -87,7 +89,7 @@ Shader "Unlit/ToonShaderBI"
             #pragma shader_feature _PALETA_ON  
             #pragma shader_feature _OUTLINE_ON  
             #pragma shader_feature _BACKCOLOR_ON  
-
+            #pragma multi_compile   _COORDINATES_UV _COORDINATES_CAMERA    
             // needed for IntRange 
             //#pragma multi_compile               
 
@@ -173,6 +175,8 @@ Shader "Unlit/ToonShaderBI"
                 #else
                     NdotL = max(0.0, dot(normal, lightDir));
                 #endif
+                if(NdotL == 0.0)
+                    NdotL = 0.25f;
                 return NdotL;
             }
 
@@ -197,7 +201,7 @@ Shader "Unlit/ToonShaderBI"
                     radius *= NdotL;
                 #endif
 
-                float3 fragColor = lerp(dots, color, smoothstep(radius*0.8f, radius, dist));
+                float3 fragColor = lerp(dots, color, smoothstep(radius*0.9f, radius, dist)); // Que tenga algo que ver con la frecuencia tambien
                 return fragColor;
             }
 
@@ -207,18 +211,26 @@ Shader "Unlit/ToonShaderBI"
                 fixed4 col = tex2D(_MainTex, i.uv);
 
                 float detail = 1.0f/(_Stripes+1); // +1 because black does not count as a stripe
-
+                
+                // Colors to mix
+                float3 color1;
+                float3 color2;
                 // All info from i transformed
                 float3 normal = normalize(i.worldNormal);
                 float3 viewDir = normalize(i.viewDir);
                 float4 position = i.vertex;
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
-                float2 uv = i.uv;
-
-                //setup screenspace UVs for lighing function
-                float aspect = _ScreenParams.x / _ScreenParams.y;
-                float2 screenPosition = i.screenPos.xy / i.screenPos.w;
-                screenPosition.x = screenPosition.x * aspect;
+                float2 uv;
+                
+                //setup UVs 
+                #if _COORDINATES_UV
+                    uv = i.uv;
+                #elif _COORDINATES_CAMERA
+                    float aspect = _ScreenParams.x / _ScreenParams.y;
+                    float2 screenPosition = i.screenPos.xy / i.screenPos.w;
+                    screenPosition.x = screenPosition.x * aspect;
+                    uv = screenPosition;
+                #endif
 
                 // Value from 0 to 1 where 0 is shadow and 1 is not
                 float shadow = SHADOW_ATTENUATION(i);
@@ -252,15 +264,13 @@ Shader "Unlit/ToonShaderBI"
                         _Halftone4
                     };
                 
-               #if _PALETA_ON
+                #if _PALETA_ON
                     float smooth = smoothstep(floor(1.0f + ToonRange/detail) - 0.02f, floor(1.0f + ToonRange/detail) , ToonRange/detail);
                     
-                    //float3 color1 = halftone(_ColorHalftone.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
-                    float3 color1 = halftone(_ColorHalftone.xyz, floor(ToonRange/detail) * _ColorPaleta, screenPosition, ToonRange);
-                    //float3 color2 = halftone(_ColorHalftone.xyz, floor(1+ToonRange/detail) * _ColorPaleta, uv, ToonRange);
-                    float3 color2 = halftone(_ColorHalftone.xyz, floor(1+ToonRange/detail) * _ColorPaleta, screenPosition, ToonRange);
+                    color1 = halftone(_ColorHalftone.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
+                    color2 = halftone(_ColorHalftone.xyz, floor(1+ToonRange/detail) * _ColorPaleta, uv, ToonRange);
                     col.xyz *= lerp(color1, color2, smooth);
-               #else
+                #else
                     // Must be done in dinamic number
                     float4 colors[4] =
                     {
@@ -274,17 +284,18 @@ Shader "Unlit/ToonShaderBI"
                     {
                         if(ToonRange > detail*i && ToonRange < detail*(i+1))
                         {
-                            float smooth = smoothstep(floor(ToonRange/detail) - 0.02f, ToonRange/detail , floor(ToonRange/detail));
+                            float smooth = smoothstep(floor(ToonRange/detail) - 0.01f, ToonRange/detail , floor(ToonRange/detail));
                             if(halftones[halftones.Length-i-1])
-                                col.xyz *= halftone(_ColorHalftone.xyz, colors[colors.Length-i-1], screenPosition, ToonRange);
+                                color1 = halftone(_ColorHalftone.xyz, colors[colors.Length-i-1], uv, ToonRange);
                             else
-                            {
-                                //col *= colors[colors.Length-i-1];
-                                float3 color1 = colors[colors.Length-i-1];
-                                float3 color2 = colors[colors.Length-i];
-                                col.xyz *= lerp(color1, color2, smooth);
-                            }
-                                
+                                color1 = colors[colors.Length-i-1];
+
+                            if(halftones[halftones.Length-i])
+                                color2 = halftone(_ColorHalftone.xyz, colors[colors.Length-i], uv, ToonRange);
+                            else
+                                color2 = colors[colors.Length-i];
+
+                            col.xyz *= lerp(color1, color2, smooth); 
                         }
                     }
                 #endif
