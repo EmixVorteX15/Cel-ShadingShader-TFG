@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Prueba
   m_Shader: {fileID: 4800000, guid: b1643dc620cf688408d2c657d13de446, type: 3}
-  m_ShaderKeywords: _COORDINATES_CAMERA _DIAGONAL_ON _HALFTONE3_ON _PALETA_ON _SIZE_ON
+  m_ShaderKeywords: _COORDINATES_UV _HALFTONE3_ON _HALFTONE4_ON _PALETA_ON _SIZE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -39,6 +39,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _HalftoneTex:
+        m_Texture: {fileID: 2800000, guid: 003fc8c10604d1e419928c66e7235dab, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -59,20 +63,20 @@ Material:
     - _BackColor: 0
     - _Brightness: 1
     - _BumpScale: 1
-    - _Coordinates: 1
+    - _Coordinates: 0
     - _Cutoff: 0.5
     - _Detail: 0.377
     - _DetailNormalMapScale: 1
-    - _Diagonal: 1
+    - _Diagonal: 0
     - _DstBlend: 0
-    - _Frequency: 61
+    - _Frequency: 2
     - _GlossMapScale: 1
     - _Glossiness: 25
     - _GlossyReflections: 1
     - _Halftone1: 0
     - _Halftone2: 0
     - _Halftone3: 1
-    - _Halftone4: 0
+    - _Halftone4: 1
     - _Metallic: 0
     - _Mode: 0
     - _ModifySize: 0
@@ -82,6 +86,10 @@ Material:
     - _Paleta: 1
     - _Parallax: 0.02
     - _Radius: 1
+    - _RemapInputMax: 0.966
+    - _RemapInputMin: 0
+    - _RemapOutputMax: 0.343
+    - _RemapOutputMin: 0
     - _RimAmount: 1
     - _RimThreshold: 1
     - _Size: 1
@@ -97,9 +105,9 @@ Material:
     - _Color: {r: 0.08940016, g: 0.38679248, b: 0.1250872, a: 1}
     - _Color1: {r: 0.5754717, g: 0, b: 0.53810304, a: 1}
     - _Color2: {r: 1, g: 0.48075786, b: 0.042452812, a: 1}
-    - _Color3: {r: 0.93859005, g: 1, b: 0, a: 1}
+    - _Color3: {r: 0.96470594, g: 1, b: 0, a: 1}
     - _Color4: {r: 0.63178635, g: 0, b: 1, a: 1}
-    - _ColorHalftone: {r: 0.5764706, g: 0, b: 0.5372549, a: 1}
+    - _ColorHalftone: {r: 0, g: 0.043339014, b: 1, a: 1}
     - _ColorPaleta: {r: 0, g: 0.32156864, b: 0.098039225, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 0}

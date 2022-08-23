@@ -4,7 +4,7 @@ Shader "Unlit/ToonShaderBI"
     {
         _MainTex ("Texture", 2D) = "white" {}
         
-
+        _HalftoneTex ("Texture", 2D) = "white" {}
         // Ambient light is applied uniformly to all surfaces on the object.
 		[HDR]
 		_AmbientColor("Ambient Color", Color) = (0.4,0.4,0.4,1)
@@ -62,6 +62,11 @@ Shader "Unlit/ToonShaderBI"
         [KeywordEnum(UV, Camera)]
         _Coordinates ("Coordinates", Float) = 0
 
+        _RemapInputMin ("Remap input min value", Range(0, 1)) = 0
+        _RemapInputMax ("Remap input max value", Range(0, 1)) = 1
+        _RemapOutputMin ("Remap output min value", Range(0, 1)) = 0
+        _RemapOutputMax ("Remap output max value", Range(0, 1)) = 1
+
         // Miscelaneous
         [Toggle]
         _BackColor("Back Color", Float) = 0
@@ -118,6 +123,8 @@ Shader "Unlit/ToonShaderBI"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            sampler2D _HalftoneTex;
+            float4 _HalftoneTex_ST;
             float4 _ColorPaleta;
             float4 _Color1;
             float4 _Color2;
@@ -131,6 +138,11 @@ Shader "Unlit/ToonShaderBI"
             float _Halftone2;
             float _Halftone3;
             float _Halftone4;
+
+            float _RemapInputMin;
+            float _RemapInputMax;
+            float _RemapOutputMin;
+            float _RemapOutputMax;  
 
             // Outline
             float _Outline;
@@ -175,12 +187,15 @@ Shader "Unlit/ToonShaderBI"
                 #else
                     NdotL = max(0.0, dot(normal, lightDir));
                 #endif
-                if(NdotL == 0.0)
-                    NdotL = 0.25f;
                 return NdotL;
             }
 
-            float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
+            float map(float input, float inMin, float inMax, float outMin,  float outMax){
+                float relativeValue = (input - inMin) / (inMax - inMin);
+                return lerp(outMin, outMax, relativeValue);
+            }
+
+            /*float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
             {
                 
                 float2 st;
@@ -192,7 +207,7 @@ Shader "Unlit/ToonShaderBI"
                 #else
                 st = uv;
                 #endif
-
+                //st = map(st, _RemapInputMin, _RemapInputMax, _RemapOutputMin, _RemapOutputMax);
                 float2 nearest = 2.0 * frac(_Frequency * st) - 1.0;
                 float dist = length(nearest);
                 float radius = _Radius;
@@ -200,15 +215,46 @@ Shader "Unlit/ToonShaderBI"
                 #if _SIZE_ON
                     radius *= NdotL;
                 #endif
-
-                float3 fragColor = lerp(dots, color, smoothstep(radius*0.9f, radius, dist)); // Que tenga algo que ver con la frecuencia tambien
+                float3 fragColor = lerp(dots, color, smoothstep(radius*0.95, radius*1.05, dist)); // Que tenga algo que ver con la frecuencia tambien
                 return fragColor;
+            }*/
+
+            float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
+            {
+                float2 st;
+                #if _DIAGONAL_ON
+                matrix <float, 2, 2> diagonalMatrix = { 0.707f, -0.707f, 
+                                0.707f, 0.707f
+                               };
+                st = mul((diagonalMatrix), uv);
+                #else
+                st = uv;
+                #endif
+                //st = map(st, _RemapInputMin, _RemapInputMax, _RemapOutputMin, _RemapOutputMax);
+                float2 nearest = 2 * frac(_Frequency * st) - 1.0;
+                float dist = length(nearest);
+                float radius = _Radius;
+                st = (st - 0.5) / radius + 0.5;
+                fixed4 halftoneTex = tex2D(_HalftoneTex, st*_Frequency);
+                float pixelDist = 2*fwidth(dist);   // Multiplied by 2 because gives a bigger antialiasing effect
+                float3 fragColor;
+                float3 white = float3(0.85f,0.85f,0.85f);
+                if(/*dist < radius */ nearest.x-1 < radius && nearest.y-1 < radius && all(halftoneTex.xyz > white))
+                    fragColor = halftoneTex.xyz * _ColorHalftone;
+                else
+                    fragColor = color;
+                /*#if _SIZE_ON
+                    radius *= NdotL;
+                #endif
+                fragColor = lerp(dots, color, smoothstep(radius-pixelDist, radius, dist));
+                */return fragColor;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
+                //fixed4 halftoneTex = tex2D(_HalftoneTex, i.uv);
 
                 float detail = 1.0f/(_Stripes+1); // +1 because black does not count as a stripe
                 
