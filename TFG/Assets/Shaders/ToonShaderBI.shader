@@ -3,74 +3,124 @@ Shader "Unlit/ToonShaderBI"
     
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        [Header(Main Texture)]
+        [Space(5)]
+        _MainTex ("  Texture", 2D) = "white" {}
         
-        _HalftoneTex ("Texture", 2D) = "white" {}
+        [Space(10)]
+        [Header(Lighting Properties)]
+        [Space(10)]
         // Ambient light is applied uniformly to all surfaces on the object.
 		[HDR]
-		_AmbientColor("Ambient Color", Color) = (0.4,0.4,0.4,1)
+		_AmbientColor("   Ambient Color", Color) = (0.5,0.5,0.5,1) // 
 		[HDR]
-		_SpecularColor("Specular Color", Color) = (0.9,0.9,0.9,1)
+		_SpecularColor("   Specular Color", Color) = (0.9,0.9,0.9,1)
 		// Controls the size of the specular reflection.
-		_Glossiness("Glossiness", Float) = 32
+		_Glossiness("   Glossiness", Float) = 32
         [HDR]
-		_RimColor("Rim Color", Color) = (1,1,1,1)
-		_RimAmount("Rim Amount", Range(0, 1)) = 0.716
+		_RimColor("   Rim Color", Color) = (1,1,1,1)
+		_RimAmount("   Rim Amount", Range(0, 1)) = 0.716
 		// Control how smoothly the rim blends when approaching unlit
 		// parts of the surface.
-		_RimThreshold("Rim Threshold", Range(0, 1)) = 0.1		
+		_RimThreshold("   Rim Threshold", Range(0, 1)) = 0.1		
 
-        
+        [Header(Color Properties)]
+        [Space(10)]
         // Number of stripes
         [IntRange]
-        _Stripes("Stripes", Range(0,10)) = 3
-        
-        // Personalized colors
-        _Color1("Color1", Color) = (1,1,1,1)
-        [Toggle] 
-        _Halftone1("Halftone", Float) = 0
-        _Color2("Color2", Color) = (1,1,1,1)
-        [Toggle] 
-        _Halftone2("Halftone", Float) = 0
-        _Color3("Color3", Color) = (1,1,1,1)
-        [Toggle] 
-        _Halftone3("Halftone", Float) = 0
-        _Color4("Color4", Color) = (1,1,1,1)
-        [Toggle] 
-        _Halftone4("Halftone", Float) = 0
-        
+        _Stripes("      Stripes", Range(1,5)) = 3
+        // Dropdown for modes
+        [KeywordEnum(Tonality, Custom)]
+        _Mode("      Mode", Float) = 0
+
+        [Header(Tonality Mode)]
+        [Space(10)]
         // Tonality Mode
-        [Toggle] 
-        _Paleta("Palette", Float) = 0
-        _ColorPaleta("Palette Color", Color) = (1,1,1,1)
+        [HDR]
+        _ColorPaleta("      Tonality Color", Color) = (1,1,1,1)
+
+        [Header(Custom Mode)]
+        [Space(10)]
+        // Custom colors
+        [HDR]
+        _Color1("       Color 1", Color) = (1,1,1,1)
+        
+        [HDR]
+        _Color2("       Color 2", Color) = (1,1,1,1)
+        
+        [HDR]
+        _Color3("       Color 3", Color) = (1,1,1,1)
+        
+        [HDR]
+        _Color4("       Color 4", Color) = (1,1,1,1)
+        
+        [HDR]
+        _Color5("       Color 5", Color) = (1,1,1,1)
+        
+        
        
         // Outline
         [Toggle]
         _Outline("Outline", Float) = 0
+        [HDR]
         _OutlineColor("Outline Color", Color) = (1,1,1,1)
         _OutlineThreshold("Outline Threshold", Range(0,1)) = 0.1
+        _OutlineThickness ("Outline Thickness", Range(0,.1)) = 0.03
 
-
+        [Header(Halftone)]
+        [Space(10)]
         // Halftone
         [IntRange]
         _Frequency("Frequency", Range(0,200)) = 0
-        _ColorHalftone("Dots Color", Color) = (1,1,1,1)
-        _Radius("Radius", Range(0,1)) = 0.5
+        _Radius("Radius", Range(0,2)) = 0.5
         [Toggle] 
         _Diagonal("Diagonal", Float) = 0
         [Toggle] 
         _Size("Size", Float) = 0
-        [KeywordEnum(UV, Camera)]
-        _Coordinates ("Coordinates", Float) = 0
-
-        _RemapInputMin ("Remap input min value", Range(0, 1)) = 0
-        _RemapInputMax ("Remap input max value", Range(0, 1)) = 1
-        _RemapOutputMin ("Remap output min value", Range(0, 1)) = 0
-        _RemapOutputMax ("Remap output max value", Range(0, 1)) = 1
+        [Toggle] 
+        _Halftone1("Halftone 1", Float) = 0
+        [HDR]
+        _ColorHalftone1("Halftone Color 1", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone2("Halftone 2", Float) = 0
+        [HDR]
+        _ColorHalftone2("Halftone Color 2", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone3("Halftone 3", Float) = 0
+        [HDR]
+        _ColorHalftone3("Halftone Color 3", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone4("Halftone 4", Float) = 0
+        [HDR]
+        _ColorHalftone4("Halftone Color 4", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone5("Halftone 5", Float) = 0 
+        [HDR]
+        _ColorHalftone5("Halftone Color 5", Color) = (1,1,1,1)
+        
+        [Toggle]
+        _HalftoneFigures("Halftone With Texture", Float) = 0
+        [Header(Halftone Texture)]
+        [Space(5)]
+        _HalftoneTex ("  Texture", 2D) = "white" {}
+        
+        
+        
+        
+        
+        
 
         // Tiling Stripes
         [HDR]
-		_TilingColor("Tiling Color", Color) = (0.0,0.0,0.0,1)
+		_TilingColor1("Tiling Color 1", Color) = (0.0,0.0,0.0,1)
+        [HDR]
+		_TilingColor2("Tiling Color 2", Color) = (0.0,0.0,0.0,1)
+        [HDR]
+		_TilingColor3("Tiling Color 3", Color) = (0.0,0.0,0.0,1)
+        [HDR]
+		_TilingColor4("Tiling Color 4", Color) = (0.0,0.0,0.0,1)
+        [HDR]
+		_TilingColor5("Tiling Color 5", Color) = (0.0,0.0,0.0,1)
         [IntRange]
         _Tiling ("Tiling", Range(1, 500)) = 10
         _Rotation ("Rotation", Range(0, 1)) = 0
@@ -78,15 +128,21 @@ Shader "Unlit/ToonShaderBI"
 	    _WarpTiling ("Warp Tiling", Range(1, 10)) = 1
         _WidthShift ("Width Shift", Range(-1, 1)) = 0
         [Toggle] 
-        _Tiling1("Tiling1", Float) = 0
+        _Tiling1("Tiling 1", Float) = 0
         [Toggle] 
         _Tiling2("Tiling 2", Float) = 0
         [Toggle] 
         _Tiling3("Tiling 3", Float) = 0
         [Toggle] 
         _Tiling4("Tiling 4", Float) = 0
+        [Toggle] 
+        _Tiling5("Tiling 5", Float) = 0
+        [Toggle] 
+        _TillingSize("Size", Float) = 0
 
         // Miscelaneous
+        [KeywordEnum(UV, Camera)]
+        _Coordinates ("Coordinates", Float) = 0
         [Toggle]
         _BackColor("Back Color", Float) = 0
     }
@@ -110,10 +166,12 @@ Shader "Unlit/ToonShaderBI"
             // declaration for Toggles ifs   
             #pragma shader_feature _DIAGONAL_ON
             #pragma shader_feature _SIZE_ON
-            #pragma shader_feature _PALETA_ON  
             #pragma shader_feature _OUTLINE_ON  
             #pragma shader_feature _BACKCOLOR_ON  
+            #pragma shader_feature _TILINGSIZE_ON  
+            #pragma shader_feature _HALFTONEFIGURES_ON  
             #pragma multi_compile   _COORDINATES_UV _COORDINATES_CAMERA    
+            #pragma multi_compile   _MODE_TONALITY _MODE_CUSTOM    
             // needed for IntRange 
             //#pragma multi_compile               
 
@@ -149,7 +207,12 @@ Shader "Unlit/ToonShaderBI"
             float4 _Color2;
             float4 _Color3;
             float4 _Color4;
-            float4 _ColorHalftone;
+            float4 _Color5;
+            float4 _ColorHalftone1;
+            float4 _ColorHalftone2;
+            float4 _ColorHalftone3;
+            float4 _ColorHalftone4;
+            float4 _ColorHalftone5;
             int _Stripes;
             float _Radius;
             int _Frequency;
@@ -157,15 +220,16 @@ Shader "Unlit/ToonShaderBI"
             float _Halftone2;
             float _Halftone3;
             float _Halftone4;
-
-            float _RemapInputMin;
-            float _RemapInputMax;
-            float _RemapOutputMin;
-            float _RemapOutputMax;  
+            float _Halftone5;
+            float _HalftoneFigures; 
 
             // Tiling
             int _Tiling;
-            float4 _TilingColor;
+            float4 _TilingColor1;
+            float4 _TilingColor2;
+            float4 _TilingColor3;
+            float4 _TilingColor4;
+            float4 _TilingColor5;
             float _Rotation;
             float _WarpScale;
             float _WarpTiling;   
@@ -175,10 +239,13 @@ Shader "Unlit/ToonShaderBI"
             float _Tiling2;
             float _Tiling3;
             float _Tiling4;
+            float _Tiling5;
+            float _TillingSize;
 
             // Outline
             float _Outline;
             float _OutlineThreshold;
+            float _OutlineThickness;
             float4 _OutlineColor;
 
             // Blinn-Phong
@@ -222,11 +289,6 @@ Shader "Unlit/ToonShaderBI"
                 return NdotL;
             }
 
-            float map(float input, float inMin, float inMax, float outMin,  float outMax){
-                float relativeValue = (input - inMin) / (inMax - inMin);
-                return lerp(outMin, outMax, relativeValue);
-            }
-
             /*float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
             {
                 
@@ -262,19 +324,28 @@ Shader "Unlit/ToonShaderBI"
 				return r;
 			}
 
-            float3 tiling(float2 uv, float3 colorBack, float3 colorFront)
+            float3 tiling(float2 uv, float3 colorBack, float3 colorFront, float NdotL)
             {
                 const float PI = 3.14159;
                 float2 pos = rotatePoint(uv, float2(0.5, 0.5), _Rotation * 2 * PI);
+                float sizeFactor;
 
                 pos.x += sin(pos.y * _WarpTiling * PI * 2) * _WarpScale;
                 pos.x *= _Tiling; 
-                fixed value = floor(frac(pos) + _WidthShift);
+                
+                if(_TillingSize)
+                    sizeFactor = (1-pow(NdotL,2));
+                else
+                    sizeFactor = 1;
+                fixed value = floor(frac(pos) + _WidthShift * sizeFactor);
                 return lerp(colorBack, colorFront, value);;
             }
             float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
             {
                 float2 st;
+                float3 fragColor;
+                float3 backgroundThreshold = float3(0.85f,0.85f,0.85f);
+
                 #if _DIAGONAL_ON
                 matrix <float, 2, 2> diagonalMatrix = { 0.707f, -0.707f, 
                                 0.707f, 0.707f
@@ -283,24 +354,26 @@ Shader "Unlit/ToonShaderBI"
                 #else
                 st = uv;
                 #endif
-                st = (st - 0.5) / _Radius + 0.5;
-                //st = map(st, _RemapInputMin, _RemapInputMax, _RemapOutputMin, _RemapOutputMax);
                 float2 nearest = 2 * frac(_Frequency * st) - 1.0;
                 float dist = length(nearest);
                 float radius = _Radius;
-                fixed4 halftoneTex = tex2D(_HalftoneTex, st*_Frequency);
-                float pixelDist = 2*fwidth(dist);   // Multiplied by 2 because gives a bigger antialiasing effect
-                float3 fragColor;
-                float3 white = float3(0.85f,0.85f,0.85f);
-                if(/*dist < radius */ nearest.x-1 < radius && nearest.y-1 < radius && all(halftoneTex.xyz > white))
-                    fragColor = halftoneTex.xyz * _ColorHalftone;
-                else
-                    fragColor = color;
-                /*#if _SIZE_ON
+                float pixelDist = fwidth(dist);   // Multiplied by 2 because gives a bigger antialiasing effect
+                #if _SIZE_ON
                     radius *= NdotL;
                 #endif
-                fragColor = lerp(dots, color, smoothstep(radius-pixelDist, radius, dist));
-                */return fragColor;
+                #if _HALFTONEFIGURES_ON
+                    st = (st - 0.5) / _Radius + 0.5;
+                    fixed4 halftoneTex = tex2D(_HalftoneTex, st*_Frequency);
+                
+                    if(all(halftoneTex.xyz > backgroundThreshold))
+                        fragColor = halftoneTex.xyz * dots;
+                    else
+                        fragColor = color;
+                #else
+                    fragColor = lerp(dots, color, smoothstep(radius-pixelDist, radius+pixelDist, dist));
+                #endif
+
+                return fragColor;
             }
 
             fixed4 frag (v2f i) : SV_Target
@@ -355,52 +428,60 @@ Shader "Unlit/ToonShaderBI"
 				rimIntensity = smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, rimIntensity);
 				float4 rim = rimIntensity * _RimColor;
                
-                #if _PALETA_ON
+                #if _MODE_TONALITY
                     float smooth = smoothstep(floor(1.0f + ToonRange/detail) - 0.02f, floor(1.0f + ToonRange/detail) , ToonRange/detail);
                     
-                    color1 = halftone(_ColorHalftone.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
-                    color2 = halftone(_ColorHalftone.xyz, floor(1+ToonRange/detail) * _ColorPaleta, uv, ToonRange);
+                    color1 = halftone(_ColorHalftone1.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
+                    color2 = halftone(_ColorHalftone1.xyz, floor(1+ToonRange/detail) * _ColorPaleta, uv, ToonRange);
                     float3 colNoTil = lerp(color1, color2, smooth);
-                    col.xyz *= tiling(uv, colNoTil, _TilingColor);
+                    col.xyz *= tiling(uv, colNoTil, _TilingColor1, ToonRange);
                    //col.xyz *= lerp(color1, color2, smooth);
-                #else
+                #elif _MODE_CUSTOM
                     int value = floor(ToonRange/detail);
                     value = clamp(value, 0, _Stripes-1);
                     switch(value)
                     {
                         case 1: 
                             if(_Halftone2)
-                                col.xyz = halftone(_ColorHalftone.xyz, _Color2, uv, ToonRange);
+                                col.xyz = halftone(_ColorHalftone2.xyz, _Color2, uv, ToonRange);
                             else
                                 //col.xyz *= tiling(uv, col.xyz, _TilingColor);
                                 col.xyz *= _Color2;
                             
                             if(_Tiling2)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor);
+                                col.xyz = tiling(uv, col.xyz, _TilingColor2, ToonRange);
                             break;
                         case 2: 
                             if(_Halftone3)
-                                col.xyz = halftone(_ColorHalftone.xyz, _Color3, uv, ToonRange);
+                                col.xyz = halftone(_ColorHalftone3.xyz, _Color3, uv, ToonRange);
                             else
                                 col.xyz *= _Color3;
                             if(_Tiling3)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor);
+                                col.xyz = tiling(uv, col.xyz, _TilingColor3, ToonRange);
                             break;
                         case 3: 
                             if(_Halftone4)
-                                col.xyz = halftone(_ColorHalftone.xyz, _Color4, uv, ToonRange);
+                                col.xyz = halftone(_ColorHalftone4.xyz, _Color4, uv, ToonRange);
                             else
                                 col.xyz *= _Color4;
                             if(_Tiling4)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor);
+                                col.xyz = tiling(uv, col.xyz, _TilingColor4, ToonRange);
+                            break;          
+                        case 4: 
+                            if(_Halftone5)
+                                col.xyz = halftone(_ColorHalftone5.xyz, _Color5, uv, ToonRange);
+                            else
+                                col.xyz *= _Color5;
+                            if(_Tiling4)
+                                col.xyz = tiling(uv, col.xyz, _TilingColor5, ToonRange);
                             break;          
                         default: 
                             if(_Halftone1)
-                                col.xyz = halftone(_ColorHalftone.xyz, _Color1, uv, ToonRange);
+                                col.xyz = halftone(_ColorHalftone1.xyz, _Color1, uv, ToonRange);
                             else
                                 col.xyz *= _Color1;
                             if(_Tiling1)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor);
+                                col.xyz = tiling(uv, col.xyz, _TilingColor1, ToonRange);
                             break;
                     }
                     /*  NO BORRAR OPTIMIZACIÓN
@@ -435,9 +516,9 @@ Shader "Unlit/ToonShaderBI"
                 }
                 else
                 {
-                    fragColor.xyz = col * (light + _AmbientColor ) + rim + specular;
-                }
+                fragColor.xyz = col * (light + _AmbientColor ) + rim + specular;
                 fragColor.w = 1;
+                }
                 return fragColor;
             }
             ENDCG
