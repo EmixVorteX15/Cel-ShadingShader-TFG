@@ -59,93 +59,103 @@ Shader "Unlit/ToonShaderBI"
         
         
        
+        [Header(Outline)]
+        [Space(10)]
         // Outline
-        [Toggle]
-        _Outline("Outline", Float) = 0
+        [KeywordEnum(None, Scale, Dot)]
+        _Outline("      Outline", Float) = 0
         [HDR]
-        _OutlineColor("Outline Color", Color) = (1,1,1,1)
-        _OutlineThreshold("Outline Threshold", Range(0,1)) = 0.1
-        _OutlineThickness ("Outline Thickness", Range(0,.1)) = 0.03
+        _OutlineColor("      Outline Color", Color) = (1,1,1,1)
+        _OutlineThreshold("      Outline Threshold", Range(0,1)) = 0.1
+        _OutlineThickness ("      Outline Thickness", Range(0,.1)) = 0.03
 
-        [Header(Halftone)]
+        [Header(Halftone colors)]
         [Space(10)]
         // Halftone
-        [IntRange]
-        _Frequency("Frequency", Range(0,200)) = 0
-        _Radius("Radius", Range(0,2)) = 0.5
-        [Toggle] 
-        _Diagonal("Diagonal", Float) = 0
-        [Toggle] 
-        _Size("Size", Float) = 0
-        [Toggle] 
-        _Halftone1("Halftone 1", Float) = 0
-        [HDR]
-        _ColorHalftone1("Halftone Color 1", Color) = (1,1,1,1)
-        [Toggle] 
-        _Halftone2("Halftone 2", Float) = 0
-        [HDR]
-        _ColorHalftone2("Halftone Color 2", Color) = (1,1,1,1)
-        [Toggle] 
-        _Halftone3("Halftone 3", Float) = 0
-        [HDR]
-        _ColorHalftone3("Halftone Color 3", Color) = (1,1,1,1)
-        [Toggle] 
-        _Halftone4("Halftone 4", Float) = 0
-        [HDR]
-        _ColorHalftone4("Halftone Color 4", Color) = (1,1,1,1)
-        [Toggle] 
-        _Halftone5("Halftone 5", Float) = 0 
-        [HDR]
-        _ColorHalftone5("Halftone Color 5", Color) = (1,1,1,1)
         
-        [Toggle]
-        _HalftoneFigures("Halftone With Texture", Float) = 0
+        [Toggle] 
+        _Halftone1("      Halftone 1", Float) = 0
+        [HDR]
+        _ColorHalftone1("      Color", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone2("      Halftone 2", Float) = 0
+        [HDR]
+        _ColorHalftone2("      Color", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone3("      Halftone 3", Float) = 0
+        [HDR]
+        _ColorHalftone3("      Color", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone4("      Halftone 4", Float) = 0
+        [HDR]
+        _ColorHalftone4("      Color", Color) = (1,1,1,1)
+        [Toggle] 
+        _Halftone5("      Halftone 5", Float) = 0 
+        [HDR]
+        _ColorHalftone5("      Color", Color) = (1,1,1,1)
+        
+        [Header(Halftone Params)]
+        [Space(5)]
+        [IntRange]
+        _Frequency("      Frequency", Range(0,200)) = 0
+        _Radius("      Radius", Range(0,2)) = 0.5
+        [Toggle] 
+        _Diagonal("      Diagonal", Float) = 0
+        [KeywordEnum(None, Smaller, Bigger)]
+        _Size("      Modify Size", Float) = 0
+
+        
         [Header(Halftone Texture)]
         [Space(5)]
         _HalftoneTex ("  Texture", 2D) = "white" {}
-        
-        
-        
-        
-        
-        
-
-        // Tiling Stripes
-        [HDR]
-		_TilingColor1("Tiling Color 1", Color) = (0.0,0.0,0.0,1)
-        [HDR]
-		_TilingColor2("Tiling Color 2", Color) = (0.0,0.0,0.0,1)
-        [HDR]
-		_TilingColor3("Tiling Color 3", Color) = (0.0,0.0,0.0,1)
-        [HDR]
-		_TilingColor4("Tiling Color 4", Color) = (0.0,0.0,0.0,1)
-        [HDR]
-		_TilingColor5("Tiling Color 5", Color) = (0.0,0.0,0.0,1)
-        [IntRange]
-        _Tiling ("Tiling", Range(1, 500)) = 10
-        _Rotation ("Rotation", Range(0, 1)) = 0
-        _WarpScale ("Warp Scale", Range(0, 1)) = 0
-	    _WarpTiling ("Warp Tiling", Range(1, 10)) = 1
-        _WidthShift ("Width Shift", Range(-1, 1)) = 0
-        [Toggle] 
-        _Tiling1("Tiling 1", Float) = 0
-        [Toggle] 
-        _Tiling2("Tiling 2", Float) = 0
-        [Toggle] 
-        _Tiling3("Tiling 3", Float) = 0
-        [Toggle] 
-        _Tiling4("Tiling 4", Float) = 0
-        [Toggle] 
-        _Tiling5("Tiling 5", Float) = 0
-        [Toggle] 
-        _TillingSize("Size", Float) = 0
-
-        // Miscelaneous
-        [KeywordEnum(UV, Camera)]
-        _Coordinates ("Coordinates", Float) = 0
         [Toggle]
-        _BackColor("Back Color", Float) = 0
+        _HalftoneFigures("Halftone With Texture", Float) = 0
+        
+        [Header(Tiling)]
+        [Space(5)]
+        // Tiling Stripes
+        [Toggle] 
+        _Tiling1("      Tiling 1", Float) = 0
+        [HDR]
+		_TilingColor1("       Color", Color) = (0.0,0.0,0.0,1)
+        [Toggle] 
+        _Tiling2("      Tiling 2", Float) = 0
+        [HDR]
+		_TilingColor2("       Color", Color) = (0.0,0.0,0.0,1)
+        [Toggle] 
+        _Tiling3("      Tiling 3", Float) = 0
+        [HDR]
+		_TilingColor3("       Color", Color) = (0.0,0.0,0.0,1)
+        [Toggle] 
+        _Tiling4("      Tiling 4", Float) = 0
+        [HDR]
+		_TilingColor4("       Color", Color) = (0.0,0.0,0.0,1)
+        [Toggle] 
+        _Tiling5("      Tiling 5", Float) = 0
+        [HDR]
+		_TilingColor5("       Color", Color) = (0.0,0.0,0.0,1)
+
+        [Header(Tiling params)]
+        [Space(10)]
+        [IntRange]
+        _Tiling ("      Tiling", Range(0, 500)) = 10
+        _WidthShift ("      Width Shift", Range(-1, 1)) = 0
+        _Rotation ("      Rotation", Range(0, 1)) = 0
+        _WarpScale ("      Warp Scale", Range(0, 1)) = 0
+	    _WarpTiling ("      Warp Tiling", Range(1, 10)) = 1
+        
+        [KeywordEnum(None, Smaller, Bigger)]
+        _TilingSize("      Modify Size", Float) = 0
+        
+        [Header(Miscellaneous)]
+        [Space(10)]
+        // Miscelaneous
+        [KeywordEnum(UV, Screenspace)]
+        _Coordinates ("      Coordinates", Float) = 0
+        [Toggle]
+        _BackColor("      Back Color", Float) = 0
     }
+
     SubShader
     {
         Tags
@@ -165,13 +175,14 @@ Shader "Unlit/ToonShaderBI"
 
             // declaration for Toggles ifs   
             #pragma shader_feature _DIAGONAL_ON
-            #pragma shader_feature _SIZE_ON
             #pragma shader_feature _OUTLINE_ON  
             #pragma shader_feature _BACKCOLOR_ON  
-            #pragma shader_feature _TILINGSIZE_ON  
             #pragma shader_feature _HALFTONEFIGURES_ON  
-            #pragma multi_compile   _COORDINATES_UV _COORDINATES_CAMERA    
+            #pragma multi_compile   _COORDINATES_UV _COORDINATES_SCREENSPACE
             #pragma multi_compile   _MODE_TONALITY _MODE_CUSTOM    
+            #pragma multi_compile   _SIZE_NONE _SIZE_BIGGER _SIZE_SMALLER 
+            #pragma multi_compile   _TILINGSIZE_NONE _TILINGSIZE_BIGGER _TILINGSIZE_SMALLER 
+            #pragma multi_compile   _OUTLINE_NONE _OUTLINE_SCALE _OUTLINE_DOT
             // needed for IntRange 
             //#pragma multi_compile               
 
@@ -194,7 +205,7 @@ Shader "Unlit/ToonShaderBI"
                 float3 worldNormal : TEXCOORD1; // Just a name to assign on memory but it wont be UV
                 float3 viewDir : TEXCOORD2;	
                 SHADOW_COORDS(3)                // Shadows data into TEXCOORD3  
-                float4 screenPos : TEXCOORD4;
+                float4 screenPos : TEXCOORD4;   // Needed for coordinates of screenspace
             };
             
 
@@ -245,7 +256,6 @@ Shader "Unlit/ToonShaderBI"
             // Outline
             float _Outline;
             float _OutlineThreshold;
-            float _OutlineThickness;
             float4 _OutlineColor;
 
             // Blinn-Phong
@@ -268,7 +278,7 @@ Shader "Unlit/ToonShaderBI"
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 o.screenPos = ComputeScreenPos(o.vertex);
-                // Compute shadow data taken from Autolight.cginc
+                // Computes shadows taken from Autolight.cginc
                 TRANSFER_SHADOW(o)
                 return o;
             }
@@ -289,57 +299,40 @@ Shader "Unlit/ToonShaderBI"
                 return NdotL;
             }
 
-            /*float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
-            {
-                
-                float2 st;
-                #if _DIAGONAL_ON
-                matrix <float, 2, 2> diagonalMatrix = { 0.707f, -0.707f, 
-                                0.707f, 0.707f
-                               };
-                st = mul((diagonalMatrix), uv);
-                #else
-                st = uv;
-                #endif
-                //st = map(st, _RemapInputMin, _RemapInputMax, _RemapOutputMin, _RemapOutputMax);
-                float2 nearest = 2.0 * frac(_Frequency * st) - 1.0;
-                float dist = length(nearest);
-                float radius = _Radius;
-
-                #if _SIZE_ON
-                    radius *= NdotL;
-                #endif
-                float3 fragColor = lerp(dots, color, smoothstep(radius*0.95, radius*1.05, dist)); // Que tenga algo que ver con la frecuencia tambien
-                return fragColor;
-            }*/
-            float2 rotatePoint(float2 pt, float2 center, float angle)
+            float2 rotate(float2 pt, float2 center, float angle)
             {
 				float sinAngle = sin(angle);
 				float cosAngle = cos(angle);
 				pt -= center;
-				float2 r;
-				r.x = pt.x * cosAngle - pt.y * sinAngle;
-				r.y = pt.x * sinAngle + pt.y * cosAngle;
-				r += center;
-				return r;
+                matrix <float, 2, 2> rotateZ = { cosAngle, -sinAngle, 
+                                sinAngle, cosAngle
+                               };
+                pt = mul(rotateZ, pt);
+				pt += center;
+				return pt;
 			}
 
             float3 tiling(float2 uv, float3 colorBack, float3 colorFront, float NdotL)
             {
-                const float PI = 3.14159;
-                float2 pos = rotatePoint(uv, float2(0.5, 0.5), _Rotation * 2 * PI);
+                float PI = 3.14159;
+                float2 pos = rotate(uv, float2(0.5, 0.5), _Rotation * 2 * PI);
                 float sizeFactor;
 
                 pos.x += sin(pos.y * _WarpTiling * PI * 2) * _WarpScale;
                 pos.x *= _Tiling; 
                 
-                if(_TillingSize)
-                    sizeFactor = (1-pow(NdotL,2));
-                else
+                #if _TILINGSIZE_BIGGER
+                    sizeFactor = pow((1-pow(NdotL,2)),-1);
+                #elif _TILINGSIZE_SMALLER
+                    sizeFactor = (1-NdotL);
+                #else
                     sizeFactor = 1;
+                #endif
+
                 fixed value = floor(frac(pos) + _WidthShift * sizeFactor);
                 return lerp(colorBack, colorFront, value);;
             }
+
             float3 halftone(float3 dots, float3 color, float2 uv, float NdotL)
             {
                 float2 st;
@@ -356,10 +349,14 @@ Shader "Unlit/ToonShaderBI"
                 #endif
                 float2 nearest = 2 * frac(_Frequency * st) - 1.0;
                 float dist = length(nearest);
-                float radius = _Radius;
-                float pixelDist = fwidth(dist);   // Multiplied by 2 because gives a bigger antialiasing effect
-                #if _SIZE_ON
-                    radius *= NdotL;
+                float radius;
+                float pixelDist = fwidth(dist); 
+                #if _SIZE_BIGGER
+                    radius = _Radius*pow(NdotL,2);
+                #elif _SIZE_SMALLER
+                    radius = _Radius/sqrt(NdotL);
+                #else 
+                    radius = _Radius;
                 #endif
                 #if _HALFTONEFIGURES_ON
                     st = (st - 0.5) / _Radius + 0.5;
@@ -387,6 +384,7 @@ Shader "Unlit/ToonShaderBI"
                 // Colors to mix
                 float3 color1;
                 float3 color2;
+                
                 // All info from i transformed
                 float3 normal = normalize(i.worldNormal);
                 float3 viewDir = normalize(i.viewDir);
@@ -397,7 +395,7 @@ Shader "Unlit/ToonShaderBI"
                 //setup UVs 
                 #if _COORDINATES_UV
                     uv = i.uv;
-                #elif _COORDINATES_CAMERA
+                #elif _COORDINATES_SCREENSPACE
                     float aspect = _ScreenParams.x / _ScreenParams.y;
                     float2 screenPosition = i.screenPos.xy / i.screenPos.w;
                     screenPosition.x = screenPosition.x * aspect;
@@ -411,11 +409,11 @@ Shader "Unlit/ToonShaderBI"
                 float lightIntensity = smoothstep(0, 0.01, ToonRange * shadow);	
 				float4 light = lightIntensity * _LightColor0;
 
-				// H from Blinn model
+				// H needed for Blinn model
 				float3 halfVector = normalize(lightDir + viewDir);
 				float NdotH = dot(normal, halfVector);
 				// Glossines is squared because makes easier to achieve
-				// the ideal glossiness value easier in the inspector
+				// the ideal glossiness value in the inspector
 				float specularIntensity = pow(NdotH * lightIntensity, pow(_Glossiness,2));
 				float specularIntensitySmooth = smoothstep(0.005, 0.01, specularIntensity);
 				float4 specular = specularIntensitySmooth * _SpecularColor;
@@ -425,7 +423,7 @@ Shader "Unlit/ToonShaderBI"
 				// We only want rim to appear on the lit side of the surface,
 				// so multiply it by NdotL, raised to a power to smoothly blend it.
 				float rimIntensity = rimDot * pow(ToonRange, _RimThreshold);
-				rimIntensity = smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, rimIntensity);
+				rimIntensity = smoothstep((1-_RimAmount) - 0.01, (1-_RimAmount) + 0.01, rimIntensity);
 				float4 rim = rimIntensity * _RimColor;
                
                 #if _MODE_TONALITY
@@ -439,51 +437,64 @@ Shader "Unlit/ToonShaderBI"
                 #elif _MODE_CUSTOM
                     int value = floor(ToonRange/detail);
                     value = clamp(value, 0, _Stripes-1);
+                    float3 halfColor, baseColor, tilColor;
+                    float halftone_bool, tiling_bool;
                     switch(value)
                     {
                         case 1: 
-                            if(_Halftone2)
-                                col.xyz = halftone(_ColorHalftone2.xyz, _Color2, uv, ToonRange);
-                            else
-                                //col.xyz *= tiling(uv, col.xyz, _TilingColor);
-                                col.xyz *= _Color2;
-                            
-                            if(_Tiling2)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor2, ToonRange);
+                            baseColor = _Color2;
+
+                            halftone_bool = _Halftone2;
+                            halfColor = _ColorHalftone2.xyz;
+
+                            tiling_bool = _Tiling2;
+                            tilColor = _TilingColor2;
                             break;
                         case 2: 
-                            if(_Halftone3)
-                                col.xyz = halftone(_ColorHalftone3.xyz, _Color3, uv, ToonRange);
-                            else
-                                col.xyz *= _Color3;
-                            if(_Tiling3)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor3, ToonRange);
+                            baseColor = _Color3;
+
+                            halftone_bool = _Halftone3;
+                            halfColor = _ColorHalftone3.xyz;
+
+                            tiling_bool = _Tiling3;
+                            tilColor = _TilingColor3;
                             break;
                         case 3: 
-                            if(_Halftone4)
-                                col.xyz = halftone(_ColorHalftone4.xyz, _Color4, uv, ToonRange);
-                            else
-                                col.xyz *= _Color4;
-                            if(_Tiling4)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor4, ToonRange);
-                            break;          
+                            baseColor = _Color4;
+
+                            halftone_bool = _Halftone4;
+                            halfColor = _ColorHalftone4.xyz;
+
+                            tiling_bool = _Tiling4;
+                            tilColor = _TilingColor4;
+                            break;       
                         case 4: 
-                            if(_Halftone5)
-                                col.xyz = halftone(_ColorHalftone5.xyz, _Color5, uv, ToonRange);
-                            else
-                                col.xyz *= _Color5;
-                            if(_Tiling4)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor5, ToonRange);
-                            break;          
+                            baseColor = _Color5;
+
+                            halftone_bool = _Halftone5;
+                            halfColor = _ColorHalftone5.xyz;
+
+                            tiling_bool = _Tiling5;
+                            tilColor = _TilingColor5;
+                            break;  
                         default: 
-                            if(_Halftone1)
-                                col.xyz = halftone(_ColorHalftone1.xyz, _Color1, uv, ToonRange);
-                            else
-                                col.xyz *= _Color1;
-                            if(_Tiling1)
-                                col.xyz = tiling(uv, col.xyz, _TilingColor1, ToonRange);
+                            baseColor = _Color1;
+
+                            halftone_bool = _Halftone1;
+                            halfColor = _ColorHalftone1.xyz;
+
+                            tiling_bool = _Tiling1;
+                            tilColor = _TilingColor1;
                             break;
                     }
+                    if(halftone_bool)
+                        col.xyz = halftone(halfColor.xyz, baseColor, uv, ToonRange);
+                    else
+                        col.xyz *= baseColor;
+                    
+                    if(tiling_bool)
+                        col.xyz = tiling(uv, col.xyz, tilColor, ToonRange);
+
                     /*  NO BORRAR OPTIMIZACIÓN
                     for(int i = 0; i < 4; i++)
                     {
@@ -506,23 +517,73 @@ Shader "Unlit/ToonShaderBI"
                 #endif
                 
                 float4 fragColor;
-                int outlineEffect = 0;
-                #if _OUTLINE_ON
+                int outlineEffect;
+                #if _OUTLINE_DOT
                     outlineEffect = outline(normal, viewDir);
+                #else
+                    outlineEffect = 0;
                 #endif
                 if(outlineEffect)
-                {
                     fragColor.xyz = _OutlineColor.xyz;
-                }
                 else
-                {
-                fragColor.xyz = col * (light + _AmbientColor ) + rim + specular;
+                    fragColor.xyz = col * (light + _AmbientColor ) + rim + specular;
+
                 fragColor.w = 1;
-                }
                 return fragColor;
             }
             ENDCG
         }  
-            UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
+        
+        Pass{
+            Cull Front
+
+            CGPROGRAM
+            
+                //include useful shader functions
+                #include "UnityCG.cginc"
+
+                //define vertex and fragment shader
+                #pragma vertex vert
+                #pragma fragment frag
+                #pragma multi_compile   _OUTLINE_NONE _OUTLINE_SCALE _OUTLINE_DOT
+
+                //tint of the texture
+                fixed4 _OutlineColor;
+                float _OutlineThickness;
+
+                //the object data that's put into the vertex shader
+                struct appdata{
+                    float4 vertex : POSITION;
+                    float4 normal : NORMAL;
+                };
+
+                //the data that's used to generate fragments and can be read by the fragment shader
+                struct v2f{
+                    float4 position : SV_POSITION;
+                };
+                
+                //the vertex shader
+                v2f vert(appdata v){
+
+                    v2f o;
+                    //convert the vertex positions from object space to clip space so they can be rendered
+                    #if _OUTLINE_SCALE
+                        o.position = UnityObjectToClipPos(v.vertex + normalize(v.normal) * _OutlineThickness);
+                    #else 
+                        o.position = UnityObjectToClipPos(v.vertex);
+                    #endif
+                    return o;
+                }
+
+                //the fragment shader
+                fixed4 frag(v2f i) : SV_TARGET{
+                    return _OutlineColor;
+                }
+                
+            ENDCG
+        }
+        UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
+
 }
+            
