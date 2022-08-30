@@ -9,7 +9,7 @@ It works as a tool to create materials with different characteristics related wi
 Do not hesitate to check the tool!
 
 ## Authors ✒️
- This project was created by:
+ This project was created by Emilio Cano
  
- Emilio Cano
+ 
  Email: emixvortexgames@gmail.com
