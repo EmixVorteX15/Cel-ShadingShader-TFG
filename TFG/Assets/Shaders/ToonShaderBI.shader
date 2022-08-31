@@ -12,17 +12,18 @@ Shader "Unlit/ToonShaderBI"
         [Space(10)]
         // Ambient light is applied uniformly to all surfaces on the object.
 		[HDR]
-		_AmbientColor("   Ambient Color", Color) = (0.5,0.5,0.5,1) // 
+		_AmbientColor("      Ambient Color", Color) = (0.5,0.5,0.5,1) // 
 		[HDR]
-		_SpecularColor("   Specular Color", Color) = (0.9,0.9,0.9,1)
+		_SpecularColor("      Specular Color", Color) = (0.9,0.9,0.9,1)
 		// Controls the size of the specular reflection.
-		_Glossiness("   Glossiness", Float) = 32
+		_Glossiness("      Glossiness", Float) = 32
+
         [HDR]
-		_RimColor("   Rim Color", Color) = (1,1,1,1)
-		_RimAmount("   Rim Amount", Range(0, 1)) = 0.716
+		_RimColor("      Rim Color", Color) = (1,1,1,1)
+		_RimAmount("      Rim Amount", Range(0, 1)) = 0.716
 		// Control how smoothly the rim blends when approaching unlit
 		// parts of the surface.
-		_RimThreshold("   Rim Threshold", Range(0, 1)) = 0.1		
+		_RimThreshold("      Rim Threshold", Range(0, 1)) = 0.1		
 
         [Header(Color Properties)]
         [Space(10)]
@@ -177,14 +178,14 @@ Shader "Unlit/ToonShaderBI"
             #pragma shader_feature _DIAGONAL_ON
             #pragma shader_feature _OUTLINE_ON  
             #pragma shader_feature _BACKCOLOR_ON  
-            #pragma shader_feature _HALFTONEFIGURES_ON  
+            #pragma shader_feature _HALFTONEFIGURES_ON 
+
+            // declaration for keywords enumerations 
             #pragma multi_compile   _COORDINATES_UV _COORDINATES_SCREENSPACE
             #pragma multi_compile   _MODE_TONALITY _MODE_CUSTOM    
             #pragma multi_compile   _SIZE_NONE _SIZE_BIGGER _SIZE_SMALLER 
             #pragma multi_compile   _TILINGSIZE_NONE _TILINGSIZE_BIGGER _TILINGSIZE_SMALLER 
             #pragma multi_compile   _OUTLINE_NONE _OUTLINE_SCALE _OUTLINE_DOT
-            // needed for IntRange 
-            //#pragma multi_compile               
 
             #include "UnityCG.cginc"
             #include "UnityLightingCommon.cginc"
@@ -340,17 +341,21 @@ Shader "Unlit/ToonShaderBI"
                 float3 backgroundThreshold = float3(0.85f,0.85f,0.85f);
 
                 #if _DIAGONAL_ON
-                matrix <float, 2, 2> diagonalMatrix = { 0.707f, -0.707f, 
-                                0.707f, 0.707f
-                               };
-                st = mul((diagonalMatrix), uv);
+                    matrix <float, 2, 2> diagonalMatrix = 
+                    {   
+                        0.707f, -0.707f, 
+                        0.707f, 0.707f
+                    };
+                    st = mul((diagonalMatrix), uv);
                 #else
-                st = uv;
+                    st = uv;
                 #endif
+
                 float2 nearest = 2 * frac(_Frequency * st) - 1.0;
                 float dist = length(nearest);
                 float radius;
                 float pixelDist = fwidth(dist); 
+
                 #if _SIZE_BIGGER
                     radius = _Radius*pow(NdotL,2);
                 #elif _SIZE_SMALLER
@@ -381,9 +386,11 @@ Shader "Unlit/ToonShaderBI"
 
                 float detail = 1.0f/(_Stripes+1); // +1 because black does not count as a stripe
                 
-                // Colors to mix
+                // Colors
                 float3 color1;
                 float3 color2;
+                float4 specular;
+                float4 rim;
                 
                 // All info from i transformed
                 float3 normal = normalize(i.worldNormal);
@@ -409,40 +416,49 @@ Shader "Unlit/ToonShaderBI"
                 float lightIntensity = smoothstep(0, 0.01, ToonRange * shadow);	
 				float4 light = lightIntensity * _LightColor0;
 
-				// H needed for Blinn model
-				float3 halfVector = normalize(lightDir + viewDir);
-				float NdotH = dot(normal, halfVector);
-				// Glossines is squared because makes easier to achieve
-				// the ideal glossiness value in the inspector
-				float specularIntensity = pow(NdotH * lightIntensity, pow(_Glossiness,2));
-				float specularIntensitySmooth = smoothstep(0.005, 0.01, specularIntensity);
-				float4 specular = specularIntensitySmooth * _SpecularColor;
+                // SPECULAR
+                // H needed for Blinn model
+                float3 halfVector = normalize(lightDir + viewDir);
+                float NdotH = dot(normal, halfVector);
+                // Glossines is squared because makes easier to achieve
+                // the ideal glossiness value in the inspector
+                float specularIntensity = pow(NdotH * lightIntensity, pow(_Glossiness,2));
+                float specularIntensitySmooth = smoothstep(0.005, 0.01, specularIntensity);
+                
+                specular = specularIntensitySmooth * _SpecularColor;
 
-                // Calculate rim lighting.
-				float rimDot = 1 - dot(viewDir, normal);
-				// We only want rim to appear on the lit side of the surface,
-				// so multiply it by NdotL, raised to a power to smoothly blend it.
-				float rimIntensity = rimDot * pow(ToonRange, _RimThreshold);
-				rimIntensity = smoothstep((1-_RimAmount) - 0.01, (1-_RimAmount) + 0.01, rimIntensity);
-				float4 rim = rimIntensity * _RimColor;
+                // RIM
+                float rimDot = 1 - dot(viewDir, normal);
+                // We only want rim to appear on the lit side of the surface,
+                // so multiply it by NdotL, raised to a power to smoothly blend it.
+                float rimIntensity = rimDot * pow(ToonRange, _RimThreshold);
+                rimIntensity = smoothstep((1-_RimAmount) - 0.01, (1-_RimAmount) + 0.01, rimIntensity);
+                rim = rimIntensity * _RimColor;
+                
                
                 #if _MODE_TONALITY
-                    float smooth = smoothstep(floor(1.0f + ToonRange/detail) - 0.02f, floor(1.0f + ToonRange/detail) , ToonRange/detail);
+                    float e = 2*fwidth(ToonRange/detail); 
+                    //float smooth = smoothstep(floor(1.0f + ToonRange/detail) - 0.02f, floor(1.0f + ToonRange/detail), ToonRange/detail);
+                    float antiaAliasFactor = smoothstep(floor(1.0f + ToonRange/detail) - e, floor(1.0f + ToonRange/detail), ToonRange/detail);
                     
                     color1 = halftone(_ColorHalftone1.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
                     color2 = halftone(_ColorHalftone1.xyz, floor(1+ToonRange/detail) * _ColorPaleta, uv, ToonRange);
-                    float3 colNoTil = lerp(color1, color2, smooth);
-                    col.xyz *= tiling(uv, colNoTil, _TilingColor1, ToonRange);
+                    float3 colNoTil = lerp(color1, color2, antiaAliasFactor);
+                    //col.xyz *= tiling(uv, colNoTil, _TilingColor1, ToonRange);
                    //col.xyz *= lerp(color1, color2, smooth);
+                   col.xyz *= color1;
                 #elif _MODE_CUSTOM
                     int value = floor(ToonRange/detail);
+                    float e = 2*fwidth(ToonRange/detail);
+                    float antiaAliasFactor = smoothstep(value+1 - e, value+1, ToonRange/detail);
                     value = clamp(value, 0, _Stripes-1);
-                    float3 halfColor, baseColor, tilColor;
+                    float3 baseColor, baseColor2, halfColor, tilColor;
                     float halftone_bool, tiling_bool;
                     switch(value)
                     {
                         case 1: 
                             baseColor = _Color2;
+                            baseColor2 = _Color3;
 
                             halftone_bool = _Halftone2;
                             halfColor = _ColorHalftone2.xyz;
@@ -452,6 +468,7 @@ Shader "Unlit/ToonShaderBI"
                             break;
                         case 2: 
                             baseColor = _Color3;
+                            baseColor2 = _Color4;
 
                             halftone_bool = _Halftone3;
                             halfColor = _ColorHalftone3.xyz;
@@ -461,6 +478,7 @@ Shader "Unlit/ToonShaderBI"
                             break;
                         case 3: 
                             baseColor = _Color4;
+                            baseColor2 = _Color5;
 
                             halftone_bool = _Halftone4;
                             halfColor = _ColorHalftone4.xyz;
@@ -470,6 +488,7 @@ Shader "Unlit/ToonShaderBI"
                             break;       
                         case 4: 
                             baseColor = _Color5;
+                            baseColor2 = _Color5;
 
                             halftone_bool = _Halftone5;
                             halfColor = _ColorHalftone5.xyz;
@@ -479,6 +498,7 @@ Shader "Unlit/ToonShaderBI"
                             break;  
                         default: 
                             baseColor = _Color1;
+                            baseColor2 = _Color2;
 
                             halftone_bool = _Halftone1;
                             halfColor = _ColorHalftone1.xyz;
@@ -487,10 +507,12 @@ Shader "Unlit/ToonShaderBI"
                             tilColor = _TilingColor1;
                             break;
                     }
+                    float3 color_aux = lerp(baseColor, baseColor2, antiaAliasFactor);
                     if(halftone_bool)
-                        col.xyz = halftone(halfColor.xyz, baseColor, uv, ToonRange);
+                        col.xyz = halftone(halfColor.xyz, color_aux, uv, ToonRange);
                     else
-                        col.xyz *= baseColor;
+                        col.xyz *= color_aux;
+                        //col.xyz *= baseColor;
                     
                     if(tiling_bool)
                         col.xyz = tiling(uv, col.xyz, tilColor, ToonRange);
@@ -523,11 +545,8 @@ Shader "Unlit/ToonShaderBI"
                 #else
                     outlineEffect = 0;
                 #endif
-                if(outlineEffect)
-                    fragColor.xyz = _OutlineColor.xyz;
-                else
-                    fragColor.xyz = col * (light + _AmbientColor ) + rim + specular;
 
+                fragColor.xyz = lerp((col * (light + _AmbientColor ) + rim + specular), _OutlineColor.xyz, outlineEffect);
                 fragColor.w = 1;
                 return fragColor;
             }
