@@ -330,7 +330,7 @@ Shader "Unlit/ToonShaderBI"
                     sizeFactor = 1;
                 #endif
 
-                fixed value = floor(frac(pos) + _WidthShift * sizeFactor);
+                float value = floor(frac(pos) + _WidthShift * sizeFactor);
                 return lerp(colorBack, colorFront, value);;
             }
 
@@ -340,12 +340,13 @@ Shader "Unlit/ToonShaderBI"
                 float3 fragColor;
                 float3 backgroundThreshold = float3(0.85f,0.85f,0.85f);
 
-                #if _DIAGONAL_ON
-                    matrix <float, 2, 2> diagonalMatrix = 
+                matrix <float, 2, 2> diagonalMatrix = 
                     {   
                         0.707f, -0.707f, 
                         0.707f, 0.707f
                     };
+
+                #if _DIAGONAL_ON
                     st = mul((diagonalMatrix), uv);
                 #else
                     st = uv;
@@ -359,10 +360,11 @@ Shader "Unlit/ToonShaderBI"
                 #if _SIZE_BIGGER
                     radius = _Radius*pow(NdotL,2);
                 #elif _SIZE_SMALLER
-                    radius = _Radius/sqrt(NdotL);
+                    radius = _Radius*pow(NdotL,-1);
                 #else 
                     radius = _Radius;
                 #endif
+
                 #if _HALFTONEFIGURES_ON
                     st = (st - 0.5) / _Radius + 0.5;
                     fixed4 halftoneTex = tex2D(_HalftoneTex, st*_Frequency);
@@ -413,19 +415,20 @@ Shader "Unlit/ToonShaderBI"
                 float shadow = SHADOW_ATTENUATION(i);
                 float ToonRange = Toon(normal, lightDir);
 
+                // Light Calculation
                 float lightIntensity = smoothstep(0, 0.01, ToonRange * shadow);	
 				float4 light = lightIntensity * _LightColor0;
 
                 // SPECULAR
-                // H needed for Blinn model
+                // H needed for Blinn
                 float3 halfVector = normalize(lightDir + viewDir);
                 float NdotH = dot(normal, halfVector);
                 // Glossines is squared because makes easier to achieve
                 // the ideal glossiness value in the inspector
-                float specularIntensity = pow(NdotH * lightIntensity, pow(_Glossiness,2));
-                float specularIntensitySmooth = smoothstep(0.005, 0.01, specularIntensity);
+                float specularIntensity = pow(NdotH, pow(_Glossiness,2));
+                specularIntensity = smoothstep(0.005, 0.01, specularIntensity);
                 
-                specular = specularIntensitySmooth * _SpecularColor;
+                specular = specularIntensity * _SpecularColor;
 
                 // RIM
                 float rimDot = 1 - dot(viewDir, normal);
@@ -435,26 +438,22 @@ Shader "Unlit/ToonShaderBI"
                 rimIntensity = smoothstep((1-_RimAmount) - 0.01, (1-_RimAmount) + 0.01, rimIntensity);
                 rim = rimIntensity * _RimColor;
                 
-               
+                int range = floor(ToonRange/detail);
+                float pixelDist = 2*fwidth(ToonRange/detail); 
+                float antiaAliasFactor = smoothstep(range+1 - pixelDist, range+1, ToonRange/detail);
+
                 #if _MODE_TONALITY
-                    float e = 2*fwidth(ToonRange/detail); 
-                    //float smooth = smoothstep(floor(1.0f + ToonRange/detail) - 0.02f, floor(1.0f + ToonRange/detail), ToonRange/detail);
-                    float antiaAliasFactor = smoothstep(floor(1.0f + ToonRange/detail) - e, floor(1.0f + ToonRange/detail), ToonRange/detail);
-                    
-                    color1 = halftone(_ColorHalftone1.xyz, floor(ToonRange/detail) * _ColorPaleta, uv, ToonRange);
-                    color2 = halftone(_ColorHalftone1.xyz, floor(1+ToonRange/detail) * _ColorPaleta, uv, ToonRange);
+                                        
+                    color1 = halftone(_ColorHalftone1.xyz, range * _ColorPaleta, uv, ToonRange);
+                    color2 = halftone(_ColorHalftone1.xyz, (range+1) * _ColorPaleta, uv, ToonRange);
                     float3 colNoTil = lerp(color1, color2, antiaAliasFactor);
-                    //col.xyz *= tiling(uv, colNoTil, _TilingColor1, ToonRange);
-                   //col.xyz *= lerp(color1, color2, smooth);
-                   col.xyz *= color1;
+                    col.xyz *= tiling(uv, colNoTil, _TilingColor1, ToonRange);
                 #elif _MODE_CUSTOM
-                    int value = floor(ToonRange/detail);
-                    float e = 2*fwidth(ToonRange/detail);
-                    float antiaAliasFactor = smoothstep(value+1 - e, value+1, ToonRange/detail);
-                    value = clamp(value, 0, _Stripes-1);
+                   
+                    range = clamp(range, 0, _Stripes-1);
                     float3 baseColor, baseColor2, halfColor, tilColor;
                     float halftone_bool, tiling_bool;
-                    switch(value)
+                    switch(range)
                     {
                         case 1: 
                             baseColor = _Color2;
@@ -510,14 +509,15 @@ Shader "Unlit/ToonShaderBI"
                     float3 color_aux = lerp(baseColor, baseColor2, antiaAliasFactor);
                     if(halftone_bool)
                         col.xyz = halftone(halfColor.xyz, color_aux, uv, ToonRange);
+                    else if(tiling_bool)
+                        col.xyz = tiling(uv, color_aux, tilColor, ToonRange);
                     else
                         col.xyz *= color_aux;
-                        //col.xyz *= baseColor;
-                    
-                    if(tiling_bool)
-                        col.xyz = tiling(uv, col.xyz, tilColor, ToonRange);
 
-                    /*  NO BORRAR OPTIMIZACIÓN
+                    
+                #endif
+                
+                /*  NO BORRAR OPTIMIZACIÓN
                     for(int i = 0; i < 4; i++)
                     {
                         if(ToonRange > detail*i && ToonRange < detail*(i+1))
@@ -536,8 +536,7 @@ Shader "Unlit/ToonShaderBI"
                             col.xyz *= lerp(color1, color2, smooth); 
                         }
                     }*/
-                #endif
-                
+
                 float4 fragColor;
                 int outlineEffect;
                 #if _OUTLINE_DOT
@@ -545,8 +544,8 @@ Shader "Unlit/ToonShaderBI"
                 #else
                     outlineEffect = 0;
                 #endif
-
-                fragColor.xyz = lerp((col * (light + _AmbientColor ) + rim + specular), _OutlineColor.xyz, outlineEffect);
+                float4 finalColor = (col * (light + _AmbientColor )  + rim + specular);
+                fragColor.xyz = lerp(finalColor, _OutlineColor.xyz, outlineEffect);
                 fragColor.w = 1;
                 return fragColor;
             }
@@ -603,6 +602,5 @@ Shader "Unlit/ToonShaderBI"
         }
         UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
     }
-
 }
             
