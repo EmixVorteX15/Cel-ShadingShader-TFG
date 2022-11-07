@@ -111,7 +111,7 @@ Shader "Unlit/ToonShaderBI"
         _HalftoneTex ("  Texture", 2D) = "white" {}
         [Toggle]
         _HalftoneFigures("Halftone With Texture", Float) = 0
-        
+        _BackgroundThreshold("      Background Threshold", Range(0,1)) = 0.5
         [Header(Tiling)]
         [Space(5)]
         // Tiling Stripes
@@ -234,6 +234,7 @@ Shader "Unlit/ToonShaderBI"
             float _Halftone4;
             float _Halftone5;
             float _HalftoneFigures; 
+            float _BackgroundThreshold; 
 
             // Tiling
             int _Tiling;
@@ -338,7 +339,7 @@ Shader "Unlit/ToonShaderBI"
             {
                 float2 st;
                 float3 fragColor;
-                float3 backgroundThreshold = float3(0.85f,0.85f,0.85f);
+                float3 backgroundThreshold = float3(_BackgroundThreshold,_BackgroundThreshold,_BackgroundThreshold);
 
                 matrix <float, 2, 2> diagonalMatrix = 
                     {   
@@ -508,11 +509,11 @@ Shader "Unlit/ToonShaderBI"
                     }
                     float3 color_aux = lerp(baseColor, baseColor2, antiaAliasFactor);
                     if(halftone_bool)
-                        col.xyz = halftone(halfColor.xyz, color_aux, uv, ToonRange);
+                        baseColor = halftone(halfColor.xyz, baseColor, uv, ToonRange);
                     else if(tiling_bool)
-                        col.xyz = tiling(uv, color_aux, tilColor, ToonRange);
-                    else
-                        col.xyz *= color_aux;
+                      baseColor = tiling(uv, baseColor, tilColor, ToonRange);
+                    
+                        col.xyz *= lerp(baseColor, baseColor2, antiaAliasFactor);
 
                     
                 #endif

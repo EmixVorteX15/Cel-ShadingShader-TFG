@@ -7,10 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Prueba
+  m_Name: Toon
   m_Shader: {fileID: 4800000, guid: b1643dc620cf688408d2c657d13de446, type: 3}
-  m_ShaderKeywords: _COORDINATES_SCREENSPACE _DIAGONAL_ON _MODE_CUSTOM _OUTLINE_NONE
-    _OUTLINE_ON _SIZE_NONE _SIZE_ON _TILING4_ON _TILINGSIZE_NONE _TILLINGSIZE_BIGGER
+  m_ShaderKeywords: _COORDINATES_UV _MODE_CUSTOM _OUTLINE_SCALE _SIZE_NONE _TILINGSIZE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -41,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HalftoneTex:
-        m_Texture: {fileID: 2800000, guid: 003fc8c10604d1e419928c66e7235dab, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -63,17 +62,15 @@ Material:
     m_Floats:
     - _BackColor: 0
     - _BackgroundThreshold: 0.5
-    - _Brightness: 1
     - _BumpScale: 1
-    - _Coordinates: 1
+    - _Coordinates: 0
     - _Cutoff: 0.5
-    - _Detail: 0.377
     - _DetailNormalMapScale: 1
-    - _Diagonal: 1
+    - _Diagonal: 0
     - _DstBlend: 0
-    - _Frequency: 62
+    - _Frequency: 0
     - _GlossMapScale: 1
-    - _Glossiness: 32.86
+    - _Glossiness: 50
     - _GlossyReflections: 1
     - _Halftone1: 0
     - _Halftone2: 0
@@ -83,66 +80,53 @@ Material:
     - _HalftoneFigures: 0
     - _Metallic: 0
     - _Mode: 1
-    - _ModifySize: 0
     - _OcclusionStrength: 1
-    - _Outline: 0
-    - _OutlineThickness: 0.0123
-    - _OutlineThreshold: 0
-    - _Paleta: 0
+    - _Outline: 1
+    - _OutlineThickness: 0.019
+    - _OutlineThreshold: 0.1
     - _Parallax: 0.02
-    - _Radius: 0.875
-    - _RemapInputMax: 0.966
-    - _RemapInputMin: 0
-    - _RemapOutputMax: 0.343
-    - _RemapOutputMin: 0
-    - _Rim: 0
-    - _RimAmount: 0.295
-    - _RimThreshold: 0
-    - _Rotation: 0.279
+    - _Radius: 0.5
+    - _RimAmount: 0.716
+    - _RimThreshold: 0.1
+    - _Rotation: 0
     - _Size: 0
     - _SmoothnessTextureChannel: 0
-    - _Specular: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Strength: 0.5
     - _Stripes: 5
-    - _Tiling: 100
+    - _Tiling: 10
     - _Tiling1: 0
     - _Tiling2: 0
     - _Tiling3: 0
-    - _Tiling4: 1
+    - _Tiling4: 0
     - _Tiling5: 0
     - _TilingSize: 0
-    - _Tillin: 0
-    - _TillingSize: 2
     - _UVSec: 0
     - _WarpScale: 0
     - _WarpTiling: 1
-    - _WidthShift: 0.556
+    - _WidthShift: 0
     - _ZWrite: 1
     m_Colors:
-    - _AmbientColor: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
-    - _Color: {r: 0.08940016, g: 0.38679248, b: 0.1250872, a: 1}
-    - _Color1: {r: 0, g: 0.03189604, b: 0.07036011, a: 1}
-    - _Color2: {r: 0.5, g: 0, b: 0.00578022, a: 1}
-    - _Color3: {r: 0.1811643, g: 0.33716366, b: 0.4125427, a: 1}
-    - _Color4: {r: 0.7156938, g: 0.6514058, b: 0.44520125, a: 1}
-    - _Color5: {r: 0.7156938, g: 0.6514058, b: 0.44520125, a: 1}
-    - _ColorHalftone: {r: 0, g: 1, b: 0.7058824, a: 0.972549}
-    - _ColorHalftone1: {r: 0, g: 0, b: 0, a: 1}
-    - _ColorHalftone2: {r: 0.22696589, g: 0.37626222, b: 0.83879924, a: 1}
-    - _ColorHalftone3: {r: 0.22696589, g: 0.37626222, b: 0.83879924, a: 1}
-    - _ColorHalftone4: {r: 0.1811643, g: 0.33716366, b: 0.4125427, a: 1}
-    - _ColorHalftone5: {r: 0.049839795, g: 0.111235775, b: 0.3018868, a: 1}
-    - _ColorPaleta: {r: 0.21415544, g: 0.10568709, b: 0.23584908, a: 1}
+    - _AmbientColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color1: {r: 0.07421358, g: 0.036889452, b: 0.015996292, a: 1}
+    - _Color2: {r: 0.051269468, g: 0.30498737, b: 0.06847818, a: 1}
+    - _Color3: {r: 0.40197787, g: 0.7681514, b: 0.10224175, a: 1}
+    - _Color4: {r: 0.5394797, g: 0.5028866, b: 0, a: 1}
+    - _Color5: {r: 0.67244333, g: 0.5583406, b: 0.048171833, a: 1}
+    - _ColorHalftone1: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorHalftone2: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorHalftone3: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorHalftone4: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorHalftone5: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorPaleta: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _OutlineColor: {r: 0.03773582, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecularColor: {r: 0, g: 0, b: 0, a: 1}
-    - _TilingColor: {r: 0.16791803, g: 0.49056602, b: 0, a: 1}
+    - _SpecularColor: {r: 0.9716981, g: 0.9716981, b: 0.9716981, a: 1}
     - _TilingColor1: {r: 0, g: 0, b: 0, a: 1}
-    - _TilingColor2: {r: 1, g: 1, b: 1, a: 1}
-    - _TilingColor3: {r: 0.61049575, g: 0.004391442, b: 0.0074990317, a: 1}
-    - _TilingColor4: {r: 0.1811643, g: 0.33716366, b: 0.4125427, a: 1}
-    - _TilingColor5: {r: 1, g: 0.590619, b: 0, a: 1}
+    - _TilingColor2: {r: 0, g: 0, b: 0, a: 1}
+    - _TilingColor3: {r: 0, g: 0, b: 0, a: 1}
+    - _TilingColor4: {r: 0, g: 0, b: 0, a: 1}
+    - _TilingColor5: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
